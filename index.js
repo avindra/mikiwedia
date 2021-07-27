@@ -1,9 +1,16 @@
 import {register} from './info.js';
-import {register as regCat} from './category.js';
+import {register as registerCategory} from './category.js';
 
-try {
-	register();
-	regCat();
-} catch(e) {
-	console.log("failed to register", e);
-}
+const modules  = [
+	register,
+	registerCategory,
+];
+
+
+modules.forEach(fn => {
+	try {
+		fn();
+	} catch(e) {
+		console.log("failed to register", fn, e);
+	}
+});

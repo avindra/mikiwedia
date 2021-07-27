@@ -22,6 +22,8 @@ const getDimensions = element => {
 const register = () => {
 
 	const ctr = document.getElementById('mw-category-media');
+	// not a cat page. nothing to do
+	if(!ctr) return;
 
 	const list = ctr.querySelector("ul.gallery");
 	const pics = list.querySelectorAll('.gallerybox');
