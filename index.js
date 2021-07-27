@@ -1,5 +1,5 @@
 import {register} from './info.js';
-import {register as regCat} from './category';
+import {register as regCat} from './category.js';
 
 try {
 	register();
