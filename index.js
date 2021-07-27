@@ -1,8 +1,9 @@
 import {register} from './info.js';
+import {register as regCat} from './category.js';
 
 try {
 	register();
-	console.log("Hello from mikiwiki");
+	regCat();
 } catch(e) {
 	console.log("failed to register", e);
 }
