@@ -1,9 +1,9 @@
 import {register} from './info.js';
-import {register as regCat} from './category.js';
+import {register as registerCategory} from './category.js';
 
 const modules  = [
 	register,
-	registerCat,
+	registerCategory,
 ];
 
 
