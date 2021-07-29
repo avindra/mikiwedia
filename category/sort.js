@@ -1,4 +1,9 @@
-
+/** 
+ * Extract image dimensions from text
+ * 
+ * @param {Element} element 
+ * @returns {number}
+ */
 const getDimensions = element => {
 	const txt = element
 		.querySelector('.gallerytext a')
@@ -7,32 +12,28 @@ const getDimensions = element => {
 	const parts = txt.match(/^(.+) × (.+); /);
 	if (!parts) return 0;
 
+
 	const x = parts[1].replaceAll(',', '');
 	const y = parts[2].replaceAll(',', '');
 
 	return Number(x) * Number(y);
 }
 
-
 /**
  * Sort files in the category by dimensions (largest first)
- * 
+ *
  * Only sorts one page at a time (200 file limit)
+ *
+ * @param {Element} ctr 
  */
-const register = () => {
-
-	const ctr = document.getElementById('mw-category-media');
-	// not a cat page. nothing to do
-	if(!ctr) return;
-
-	const list = ctr.querySelector("ul.gallery");
-	const pics = list.querySelectorAll('.gallerybox');
-
+export const register = ctr => {
 	const root = ctr.parentElement;
 
 	const btn = document.createElement("button");
 	btn.textContent = "Sort these file(s) by dimensions";
 	btn.onclick = () => {
+		const list = ctr.querySelector("ul.gallery");
+		const pics = list.querySelectorAll('.gallerybox');
 		// hide parent before performing sort to avoid excessive repainting
 		root.removeChild(ctr);
 
@@ -55,5 +56,3 @@ const register = () => {
 
 	ctr.prepend(btn);
 }
-
-export {register};
