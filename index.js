@@ -1,5 +1,5 @@
 import {register} from './info.js';
-import {register as registerCategory} from './category.js';
+import {register as registerCategory} from './category/index.js';
 
 const modules  = [
 	register,
