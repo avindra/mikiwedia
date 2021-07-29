@@ -1,5 +1,7 @@
 
 /**
+ * Find links for next and previous pages in
+ * the gallery.
  * 
  * @param {Element} ctr 
  * 
@@ -28,6 +30,45 @@ const iterate = (ctr) => {
 	return [null, null];
 }
 
+/**
+ * CSS selector for main <ul> that holds
+ * images in the category view.
+ */
+const CSS_GALLERY = '.mw-gallery-traditional';
+
+/**
+ * Fetch images from a page and
+ * merge them into the current view.
+ * 
+ * @param {string} url 
+ */
+async function loadPage(url) {
+	const r = await fetch(url);
+	const txt = await r.text();
+	const parser = new DOMParser();
+	const doc = parser.parseFromString(txt, "text/html");
+
+	const pics = doc.querySelector(CSS_GALLERY);
+
+	const G = document.querySelector(CSS_GALLERY);
+	const P = G.parentNode;
+	// hide and do work
+	P.removeChild(G);
+	Array.from(pics.querySelectorAll('li'))
+		.map(e => e.parentNode.removeChild(e))
+		.forEach(e => G.appendChild(e));
+	// show
+	P.appendChild(G);
+
+	// chain next
+	register(doc.getElementById('mw-category-media'));
+}
+
+/**
+ * Remember the root node so we
+ * know where to put the buttons.
+ */
+let rootCtr;
 
 /**
  * Add dynamic pagination capabilities
@@ -35,8 +76,29 @@ const iterate = (ctr) => {
  *
  * @param {Element} ctr 
  */
-export const register = (ctr) => {
+export const register = async ctr => {
+	if(!rootCtr) rootCtr = ctr;
 	const data = iterate(ctr);
 
-	console.log('d', data);
+	const [prev, next] = data;
+
+	if (prev) {
+		const btn = document.createElement('button');
+		btn.onclick = () => {
+			loadPage(prev);
+			btn.disabled = true;
+		};
+		btn.textContent = 'Load previous page';
+		rootCtr.prepend(btn);
+	}
+
+	if (next) {
+		const btn = document.createElement('button');
+		btn.onclick = () => {
+			loadPage(next);
+			btn.disabled = true;
+		};
+		btn.textContent = 'Load next page';
+		rootCtr.prepend(btn);
+	}
 }

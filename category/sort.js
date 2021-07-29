@@ -27,14 +27,13 @@ const getDimensions = element => {
  * @param {Element} ctr 
  */
 export const register = ctr => {
-	const list = ctr.querySelector("ul.gallery");
-	const pics = list.querySelectorAll('.gallerybox');
-
 	const root = ctr.parentElement;
 
 	const btn = document.createElement("button");
 	btn.textContent = "Sort these file(s) by dimensions";
 	btn.onclick = () => {
+		const list = ctr.querySelector("ul.gallery");
+		const pics = list.querySelectorAll('.gallerybox');
 		// hide parent before performing sort to avoid excessive repainting
 		root.removeChild(ctr);
 
