@@ -14,7 +14,7 @@ const iterate = (ctr) => {
 	const B = A.nextElementSibling;
 
 	const AisLink = A.tagName == 'A';
-	const BisLink = B.tagName == 'A';
+	const BisLink = B && B.tagName == 'A';
 
 	if (AisLink && BisLink) { 
 		return [A.href, B.href];
