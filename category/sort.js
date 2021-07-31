@@ -9,9 +9,8 @@ const getDimensions = element => {
 		.querySelector('.gallerytext a')
 		.nextSibling.textContent.trim();
 	
-	const parts = txt.match(/^(.+) × (.+); /);
+	const parts = txt.match(/^([\d,]+) × ([\d,]+); /);
 	if (!parts) return 0;
-
 
 	const x = parts[1].replaceAll(',', '');
 	const y = parts[2].replaceAll(',', '');
