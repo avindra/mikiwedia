@@ -41,8 +41,9 @@ const CSS_GALLERY = '.mw-gallery-traditional';
  * merge them into the current view.
  * 
  * @param {string} url 
+ * @param {boolean} isNext
  */
-async function loadPage(url) {
+async function loadPage(url, isNext) {
 	const r = await fetch(url);
 	const txt = await r.text();
 	const parser = new DOMParser();
@@ -54,14 +55,16 @@ async function loadPage(url) {
 	const P = G.parentNode;
 	// hide and do work
 	P.removeChild(G);
-	Array.from(pics.querySelectorAll('li'))
-		.map(e => e.parentNode.removeChild(e))
-		.forEach(e => G.appendChild(e));
+	const newImages = Array.from(pics.querySelectorAll('li'))
+		.map(e => e.parentNode.removeChild(e));
+	newImages.forEach(e => G.appendChild(e));
 	// show
 	P.appendChild(G);
 
+	mw.notify(`Loaded ${newImages.length} files`);
+
 	// chain next
-	register(doc.getElementById('mw-category-media'));
+	register(doc.getElementById('mw-category-media'), isNext);
 }
 
 /**
@@ -75,27 +78,36 @@ let rootCtr;
  * to gallery views in categories.
  *
  * @param {Element} ctr 
+ * @param {boolean} isNext
  */
-export const register = async ctr => {
+export const register = async (ctr, isNext) => {
 	if(!rootCtr) rootCtr = ctr;
 	const data = iterate(ctr);
 
 	const [prev, next] = data;
 
-	if (prev) {
+	/**
+	 * TODO: handle show* in a less obtuse way
+	 */
+	const showDefined = isNext !== undefined;
+
+	const showPrev = !showDefined || (showDefined && !isNext);
+	const showNext = !showDefined || (showDefined && isNext);
+
+	if (prev && showPrev) {
 		const btn = document.createElement('button');
 		btn.onclick = () => {
-			loadPage(prev);
+			loadPage(prev, false);
 			btn.disabled = true;
 		};
 		btn.textContent = 'Load previous page';
 		rootCtr.prepend(btn);
 	}
 
-	if (next) {
+	if (next && showNext) {
 		const btn = document.createElement('button');
 		btn.onclick = () => {
-			loadPage(next);
+			loadPage(next, true);
 			btn.disabled = true;
 		};
 		btn.textContent = 'Load next page';
