@@ -38,6 +38,8 @@ export const register = ctr => {
 
 		const shadowGallery = Array.from(pics).map(el => el.parentNode.removeChild(el));
 
+		const beforeSort = Array.from(shadowGallery);
+
 		shadowGallery.sort((a, b) => {
 			const px_a = getDimensions(a);
 			const px_b = getDimensions(b);
@@ -45,12 +47,16 @@ export const register = ctr => {
 			return px_a < px_b;
 		});
 
+		const sorted = !beforeSort.some((a, i) => shadowGallery[i] !== a);
+
+		if (sorted) {
+			mw.notify('Already sorted');
+		}
+
 		// re-insert
 		shadowGallery.forEach(el => list.appendChild(el));
 
 		root.appendChild(ctr);
-		// sorting is currently a one-way operation
-		btn.parentNode.removeChild(btn);
 	}
 
 	ctr.prepend(btn);
