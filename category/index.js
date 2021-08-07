@@ -7,6 +7,8 @@ const register = () => {
 	// not a cat page. nothing to do
 	if(!ctr) return;
 
+	const isCat = location.pathname.startsWith('/wiki/Category:');
+
 	registerSort(ctr);
 	registerPager(ctr);
 }
