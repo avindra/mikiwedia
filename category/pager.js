@@ -19,8 +19,7 @@ const iterate = (ctr) => {
 	if (AisLink && BisLink) { 
 		return [A.href, B.href];
 	} else if (AisLink && !BisLink) {
-		// FIXME: depends on English translation
-		if (A.innerText === 'previous page') {
+		if (A.previousSibling.textContent === "(") {
 			return [A.href, null];
 		} else {
 			return [null, A.href];
@@ -100,7 +99,7 @@ export const register = async (ctr, isNext) => {
 			loadPage(prev, false);
 			btn.disabled = true;
 		};
-		btn.textContent = 'Load previous page';
+		btn.textContent = 'Load PREVIOUS page';
 		rootCtr.prepend(btn);
 	}
 
@@ -110,7 +109,7 @@ export const register = async (ctr, isNext) => {
 			loadPage(next, true);
 			btn.disabled = true;
 		};
-		btn.textContent = 'Load next page';
+		btn.textContent = 'Load NEXT page';
 		rootCtr.prepend(btn);
 	}
 }
