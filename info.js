@@ -40,14 +40,6 @@ const plotGraph = (info) => {
 	windowManager.openWindow( dialog );
 }
 
-
-/**
- * 
- * @param {Number} ms 
- * @returns {Promise<any>}
- */
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 /**
  * Quickly check file view analytics by mousing
  * over titles
@@ -66,18 +58,11 @@ export const register = () => {
 			const txt = await response.text();
 
 
+			/**
+			 * Load graphics modules
+			 */
 			if (!('drawVegaGraph' in mw)) {
-				/**
-				 * Load graphics modules
-				 */
-				mw.loader.load("ext.pageviewinfo");
-
-				/**
-				 * wait for module to load
-				 */
-				while(!('drawVegaGraph' in mw)) {
-					await sleep(500);
-				}
+				await mw.loader.using("ext.pageviewinfo");
 			}
 
 			/**
