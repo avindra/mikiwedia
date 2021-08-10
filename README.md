@@ -31,16 +31,16 @@ This is the code to use in your [`common.js`](https://commons.wikipedia.org/wiki
 In Firefox/Chrome: `ctrl`+`shift`+`i` to use developer console.
 
 ```js
-const el = document.createElement("script");
-el.type = "module";
-el.src = '//dra.vin/mikiwedia/index.js';
-document.body.appendChild(el);
+const s = document.createElement("script");
+s.type = "module";
+s.src = '//dra.vin/mikiwedia/index.js';
+document.body.appendChild(s);
 ```
 
 Local testing looks more like:
 
 ```js
-const l = document.createElement("script");
+var l = document.createElement("script");
 l.type = "module";
 l.src = 'http://localhost:8000/index.js';
 document.body.appendChild(l);
