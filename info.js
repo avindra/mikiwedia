@@ -42,49 +42,85 @@ const plotGraph = (file, info) => {
 }
 
 /**
+ * @see https://davidwalsh.name/javascript-debounce-function
+ * 
+ * @param {Function} func 
+ * @param {number} wait 
+ * @returns {Function} debounced version of the function
+ */
+function debounce(func, wait) {
+	let timeout;
+	return function() {
+		const context = this, args = arguments;
+		const later = function() {
+			timeout = null;
+			func.apply(context, args);
+		};
+		if (!timeout) {
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		}
+	};
+};
+
+/**
  * Quickly check file view analytics by mousing
  * over titles
  */
 export const register = () => {
 	const isWikidata = location.host === 'www.wikidata.org';
-	$(".mw-contributions-title, " +
-		"li.gallerybox > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)").mouseover(
+
+	/**
+	 * 
+	 * @param {Event} event 
+	 * @returns 
+	 */
+	const onLookup = async (event) => {
+		const node = event.currentTarget;
 		/**
-		 * 
-		 * @param {Event} event 
-		 * @returns 
+		 * wikidata href value -> https://example.com/wiki/Q1337
 		 */
-		async (event) => {
-			const node = event.currentTarget;
-			/**
-			 * wikidata href value -> https://example.com/wiki/Q1337
-			 */
-			const mwFile = isWikidata ? node.href.match(/\/wiki\/(.+)/)[1] : node.title;
-			const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
-			const txt = await response.text();
+		const mwFile = isWikidata ? node.href.match(/\/wiki\/(.+)/)[1] : node.title;
+		const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
+		const txt = await response.text();
 
 
-			/**
-			 * Load graphics modules
-			 */
-			if (!('drawVegaGraph' in mw)) {
-				await mw.loader.using("ext.pageviewinfo");
+		/**
+		 * Load graphics modules
+		 */
+		if (!('drawVegaGraph' in mw)) {
+			await mw.loader.using("ext.pageviewinfo");
+		}
+
+		/**
+		 * Scrape raw RLCONF, which contains the data
+		 */
+		const RLCONF = txt.match(/RLCONF=([\s\S]+);RLSTATE=/);
+		if (RLCONF) {
+			const conf = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
+			const data = conf.wgPageViewInfo;
+			console.log('d', data);
+			const hasNoData = data.graph.data[0].values.every(sample => !sample.views);
+			if (hasNoData) {
+				mw.notify(`No data for ${mwFile}`);
+			} else {
+				plotGraph(mwFile, data);
 			}
+		}
+	};
 
-			/**
-			 * Scrape raw RLCONF, which contains the data
-			 */
-			const RLCONF = txt.match(/RLCONF=([\s\S]+);RLSTATE=/);
-			if (RLCONF) {
-				const conf = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
-				const data = conf.wgPageViewInfo;
-				console.log('d', data);
-				const hasNoData = data.graph.data[0].values.every(sample => !sample.views);
-				if (hasNoData) {
-					mw.notify(`No data for ${mwFile}`);
-				} else {
-					plotGraph(mwFile, data);
-				}
-			}
-		})
+	const pageInfo = document.getElementById('t-info');
+	if (pageInfo) {
+		const A = document.createElement('a');
+		A.textContent = 'Page views';
+		A.title = mw.config.get('wgPageName');
+		A.addEventListener('click', onLookup, false);
+
+		pageInfo.parentNode.appendChild(A);
 	}
+
+	const slowLookup = debounce(onLookup, 1200);
+
+	$(".mw-contributions-title").mouseover(slowLookup);
+	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", slowLookup);
+}
