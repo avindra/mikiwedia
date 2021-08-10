@@ -1,19 +1,92 @@
+/**
+ * @param {any} info wgPageViewInfo from RLCONF JSON
+ * 
+ * @see https://github.com/wikimedia/mediawiki-extensions-PageViewInfo/blob/master/resources/ext.pageviewinfo.js
+ */
+const plotGraph = (info) => {
+	let dialog, windowManager;
+	function MyProcessDialog( config ) {
+		MyProcessDialog.parent.call( this, config );
+	}
+	OO.inheritClass( MyProcessDialog, OO.ui.ProcessDialog );
 
+	MyProcessDialog.static.title = mw.msg( 'pvi-range', info.start, info.end );
+	MyProcessDialog.static.name = 'PageViewInfo';
+	MyProcessDialog.static.actions = [
+		{ label: mw.msg( 'pvi-close' ), flags: 'safe' }
+	];
+
+	MyProcessDialog.prototype.initialize = function () {
+		MyProcessDialog.parent.prototype.initialize.apply( this, arguments );
+		this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+		this.$body.append( this.content.$element );
+		mw.drawVegaGraph( this.content.$element[ 0 ], info.graph );
+	};
+	MyProcessDialog.prototype.getActionProcess = function ( action ) {
+		const diag = this;
+		if ( action ) {
+			return new OO.ui.Process(function() {
+				diag.close({ action: action });
+			});
+		}
+		return MyProcessDialog.parent.prototype.getActionProcess.call( this, action );
+	};
+
+	windowManager = new OO.ui.WindowManager();
+	$('body').append( windowManager.$element );
+
+	dialog = new MyProcessDialog( { size: 'large' } );
+	windowManager.addWindows( [ dialog ] );
+	windowManager.openWindow( dialog );
+}
+
+
+/**
+ * 
+ * @param {Number} ms 
+ * @returns {Promise<any>}
+ */
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Quickly check file view analytics by mousing
+ * over titles
+ */
 export const register = () => {
-	let requested = false;
-	Array.from(document.querySelectorAll("#t-info > a:nth-child(1)")).forEach(link => {
-		link.addEventListener("mouseover", async () => {
-			if(requested) return;
-			requested = true;
-			const mwFile = document.getElementById("firstHeading").textContent;
+	$(".mw-contributions-title, " +
+		"li.gallerybox > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)").mouseover(
+		/**
+		 * 
+		 * @param {Event} event 
+		 * @returns 
+		 */
+		async (event) => {
+			const mwFile = event.currentTarget.title;
 			const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 			const txt = await response.text();
 
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(txt, "text/html");
-			const content = doc.querySelector("#content");
 
-			document.querySelector("#firstHeading").prepend(content);
+			if (!('drawVegaGraph' in mw)) {
+				/**
+				 * Load graphics modules
+				 */
+				mw.loader.load("ext.pageviewinfo");
+
+				/**
+				 * wait for module to load
+				 */
+				while(!('drawVegaGraph' in mw)) {
+					await sleep(500);
+				}
+			}
+
+			/**
+			 * Scrape raw RLCONF, which contains the data
+			 */
+			const RLCONF = txt.match(/RLCONF=([\s\S]+);RLSTATE=/);
+			if (RLCONF) {
+				const data = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
+				plotGraph(data.wgPageViewInfo);
+			}
 		});
-	});
 }
