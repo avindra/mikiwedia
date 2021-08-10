@@ -57,9 +57,9 @@ export const register = () => {
 		async (event) => {
 			const node = event.currentTarget;
 			/**
-			 * wikidata href format -> /wiki/Q1337
+			 * wikidata href value -> https://example.com/wiki/Q1337
 			 */
-			const mwFile = isWikidata ? node.href.substring(6) : node.title;
+			const mwFile = isWikidata ? node.href.match(/(Q\d+)/)[1] : node.title;
 			const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 			const txt = await response.text();
 
