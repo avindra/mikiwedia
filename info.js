@@ -48,6 +48,7 @@ const plotGraph = (file, info) => {
 export const register = () => {
 	$(".mw-contributions-title, " +
 		"li.gallerybox > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)").mouseover(
+			$.debounce(250,
 		/**
 		 * 
 		 * @param {Event} event 
@@ -81,5 +82,6 @@ export const register = () => {
 					plotGraph(mwFile, data);
 				}
 			}
-		});
+		})
+		)
 	}
