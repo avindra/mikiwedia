@@ -46,7 +46,7 @@ const plotGraph = (file, info) => {
  * over titles
  */
 export const register = () => {
-	const isWikidata = location.host === 'wikidata';
+	const isWikidata = location.host === 'www.wikidata.org';
 	$(".mw-contributions-title, " +
 		"li.gallerybox > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)").mouseover(
 		/**
