@@ -1,16 +1,17 @@
 /**
+ * @param {string} file Filename
  * @param {any} info wgPageViewInfo from RLCONF JSON
  * 
  * @see https://github.com/wikimedia/mediawiki-extensions-PageViewInfo/blob/master/resources/ext.pageviewinfo.js
  */
-const plotGraph = (info) => {
+const plotGraph = (file, info) => {
 	let dialog, windowManager;
 	function MyProcessDialog( config ) {
 		MyProcessDialog.parent.call( this, config );
 	}
 	OO.inheritClass( MyProcessDialog, OO.ui.ProcessDialog );
 
-	MyProcessDialog.static.title = mw.msg( 'pvi-range', info.start, info.end );
+	MyProcessDialog.static.title = file + ' || ' + mw.msg( 'pvi-range', info.start, info.end );
 	MyProcessDialog.static.name = 'PageViewInfo';
 	MyProcessDialog.static.actions = [
 		{ label: mw.msg( 'pvi-close' ), flags: 'safe' }
@@ -77,7 +78,7 @@ export const register = () => {
 				if (hasNoData) {
 					mw.notify(`No data for ${mwFile}`);
 				} else {
-					plotGraph(data);
+					plotGraph(mwFile, data);
 				}
 			}
 		});
