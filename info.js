@@ -56,8 +56,10 @@ function debounce(func, wait) {
 			timeout = null;
 			func.apply(context, args);
 		};
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
+		if (!timeout) {
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+		}
 	};
 };
 
@@ -73,7 +75,7 @@ export const register = () => {
 	 * @param {Event} event 
 	 * @returns 
 	 */
-	const onLookup = debounce(async (event) => {
+	const onLookup = async (event) => {
 		const node = event.currentTarget;
 		/**
 		 * wikidata href value -> https://example.com/wiki/Q1337
@@ -105,7 +107,7 @@ export const register = () => {
 				plotGraph(mwFile, data);
 			}
 		}
-	}, 550);
+	};
 
 	const pageInfo = document.getElementById('t-info');
 	if (pageInfo) {
@@ -117,6 +119,8 @@ export const register = () => {
 		pageInfo.parentNode.appendChild(A);
 	}
 
-	$(".mw-contributions-title").mouseover(onLookup);
-	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", onLookup);
+	const slowLookup = debounce(onLookup, 1200);
+
+	$(".mw-contributions-title").mouseover(slowLookup);
+	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", slowLookup);
 }
