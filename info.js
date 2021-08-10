@@ -70,8 +70,15 @@ export const register = () => {
 			 */
 			const RLCONF = txt.match(/RLCONF=([\s\S]+);RLSTATE=/);
 			if (RLCONF) {
-				const data = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
-				plotGraph(data.wgPageViewInfo);
+				const conf = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
+				const data = conf.wgPageViewInfo;
+				console.log('d', data);
+				const hasNoData = data.graph.data[0].values.every(sample => !sample.views);
+				if (hasNoData) {
+					mw.notify("No views exists for the default time range.");
+				} else {
+					plotGraph(data);
+				}
 			}
 		});
-}
+	}
