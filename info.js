@@ -114,7 +114,7 @@ export const register = () => {
 		const A = document.createElement('a');
 		A.textContent = 'Page views';
 		A.title = mw.config.get('wgPageName');
-		A.onclick = onLookup.bind(A);
+		A.addEventListener('click', onLookup, false);
 
 		pageInfo.parentNode.appendChild(A);
 	}
