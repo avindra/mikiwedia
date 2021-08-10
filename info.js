@@ -59,7 +59,7 @@ export const register = () => {
 			/**
 			 * wikidata href value -> https://example.com/wiki/Q1337
 			 */
-			const mwFile = isWikidata ? node.href.match(/(Q\d+)/)[1] : node.title;
+			const mwFile = isWikidata ? node.href.match(/\/wiki\/(.+)/)[1] : node.title;
 			const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 			const txt = await response.text();
 
