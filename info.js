@@ -105,7 +105,7 @@ export const register = () => {
 				plotGraph(mwFile, data);
 			}
 		}
-	}, 250);
+	}, 550);
 
 	const pageInfo = document.getElementById('t-info');
 	if (pageInfo) {
