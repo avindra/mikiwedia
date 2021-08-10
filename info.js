@@ -75,7 +75,7 @@ export const register = () => {
 				console.log('d', data);
 				const hasNoData = data.graph.data[0].values.every(sample => !sample.views);
 				if (hasNoData) {
-					mw.notify("No views exists for the default time range.");
+					mw.notify(`No data for ${mwFile}`);
 				} else {
 					plotGraph(data);
 				}
