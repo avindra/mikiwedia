@@ -46,6 +46,7 @@ const plotGraph = (file, info) => {
  * over titles
  */
 export const register = () => {
+	const isWikidata = location.host === 'wikidata';
 	$(".mw-contributions-title, " +
 		"li.gallerybox > div:nth-child(1) > div:nth-child(2) > a:nth-child(1)").mouseover(
 		/**
@@ -54,7 +55,11 @@ export const register = () => {
 		 * @returns 
 		 */
 		async (event) => {
-			const mwFile = event.currentTarget.title;
+			const node = event.currentTarget;
+			/**
+			 * wikidata href format -> /wiki/Q1337
+			 */
+			const mwFile = isWikidata ? node.href.substring(6) : node.title;
 			const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 			const txt = await response.text();
 
