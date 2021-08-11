@@ -79,7 +79,7 @@ export const register = () => {
 		 * href example: https://example.com/wiki/Q1337
 		 * title example (well-formed): File:Some File.jpg
 		 */
-		const mwFile = (/^.+:.+$/.test(node.title) && node.title) ||
+		const mwFile = (/^(?:.+:.+Q\d+|)$/.test(node.title) && node.title) ||
 			(/\/wiki\/(.+)/.test(node.href) && RegExp.$1);
 		const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 		const txt = await response.text();
