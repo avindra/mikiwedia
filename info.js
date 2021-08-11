@@ -68,8 +68,6 @@ function debounce(func, wait) {
  * over titles
  */
 export const register = () => {
-	const isWikidata = location.host === 'www.wikidata.org';
-
 	/**
 	 * 
 	 * @param {Event} event 
@@ -78,9 +76,11 @@ export const register = () => {
 	const onLookup = async (event) => {
 		const node = event.currentTarget;
 		/**
-		 * wikidata href value -> https://example.com/wiki/Q1337
+		 * href example: https://example.com/wiki/Q1337
+		 * title example (well-formed): File:Some File.jpg
 		 */
-		const mwFile = isWikidata ? node.href.match(/\/wiki\/(.+)/)[1] : node.title;
+		const mwFile = (/^.+:.+$/.test(node.title) && node.title) ||
+			(/\/wiki\/(.+)/.test(node.href) && RegExp.$1);
 		const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 		const txt = await response.text();
 
@@ -119,7 +119,7 @@ export const register = () => {
 		pageInfo.parentNode.appendChild(A);
 	}
 
-	const slowLookup = debounce(onLookup, 1200);
+	const slowLookup = debounce(onLookup, 750);
 
 	$(".mw-contributions-title").mouseover(slowLookup);
 	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", slowLookup);
