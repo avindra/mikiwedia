@@ -29,9 +29,14 @@ const app = () => {
 		});
 		clearTimeout(id);
 		if (r.ok) {
-			const l = document.createElement('script');
-			l.type = 'module';
-			l.src = LOCAL_DEV_URL;
+			if(window.lls) {
+				app();
+			} else {
+				window.lls = document.createElement('script');
+				window.lls.type = 'module';
+				window.lls.src = LOCAL_DEV_URL;
+				document.body.appendChild(window.lls);
+			}
 		} else {
 			throw new Exception(`Loading from production`)
 		}
