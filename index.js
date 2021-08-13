@@ -29,8 +29,12 @@ export const app = () => {
 		});
 		clearTimeout(id);
 		if (r.ok) {
-			const {app: localApp} = await import(`${LOCAL_DEV_URL}`);
-			localApp();
+			// make sure to load dev env only once
+			if(!window.devel) {
+				window.devel = true;
+				const {app: localApp} = await import(`${LOCAL_DEV_URL}`);
+				localApp();
+			}
 		} else {
 			throw new Exception(`Loading from production`)
 		}
