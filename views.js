@@ -68,6 +68,7 @@ function debounce(func, wait) {
  * over titles
  */
 export const register = () => {
+	const thisPage = mw.config.get('wgPageName');
 	/**
 	 * 
 	 * @param {Event} event 
@@ -79,7 +80,7 @@ export const register = () => {
 		 * href example: https://example.com/wiki/Q1337
 		 * title example (well-formed): File:Some File.jpg
 		 */
-		const mwFile = (/^(?:.+:.+|Q\d+)$/.test(node.title) && node.title) ||
+		const mwFile = ((/^(?:.+:.+|Q\d+)$/.test(node.title) || node.title === thisPage)  && node.title) ||
 			(/\/wiki\/(.+)/.test(node.href) && RegExp.$1);
 		const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 		const txt = await response.text();
@@ -113,10 +114,18 @@ export const register = () => {
 	if (pageInfo) {
 		const A = document.createElement('a');
 		A.textContent = 'Page views';
-		A.title = mw.config.get('wgPageName');
+		A.title = thisPage;
 		A.addEventListener('click', onLookup, false);
 
-		pageInfo.parentNode.appendChild(A);
+		let parent = document.querySelector("#p-views ul");
+		if (parent) {
+			const L = document.createElement('li');
+			L.appendChild(A);
+			parent.prepend(L);
+		} else {
+			pageInfo.parentNode.appendChild(A);
+		}
+
 	}
 
 	const slowLookup = debounce(onLookup, 750);
