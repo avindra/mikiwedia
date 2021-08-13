@@ -1,7 +1,7 @@
 import {register} from './info.js';
 import {register as registerCategory} from './category/index.js';
 
-const app = () => {
+export const app = () => {
 	[
 		register,
 		registerCategory,
@@ -29,14 +29,8 @@ const app = () => {
 		});
 		clearTimeout(id);
 		if (r.ok) {
-			if(window.lls) {
-				app();
-			} else {
-				window.lls = document.createElement('script');
-				window.lls.type = 'module';
-				window.lls.src = LOCAL_DEV_URL;
-				document.body.appendChild(window.lls);
-			}
+			const {app: localApp} = await import(`${LOCAL_DEV_URL}`);
+			localApp();
 		} else {
 			throw new Exception(`Loading from production`)
 		}
