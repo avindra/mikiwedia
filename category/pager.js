@@ -1,3 +1,4 @@
+import {loadDocument, loadPage} from './../util.js';
 
 /**
  * Find links for next and previous pages in
@@ -36,37 +37,6 @@ const iterate = (ctr) => {
 const CSS_GALLERY = '.mw-gallery-traditional';
 
 /**
- * Fetch images from a page and
- * merge them into the current view.
- * 
- * @param {string} url 
- * @param {boolean} isNext
- */
-async function loadPage(url, isNext) {
-	const r = await fetch(url);
-	const txt = await r.text();
-	const parser = new DOMParser();
-	const doc = parser.parseFromString(txt, "text/html");
-
-	const pics = doc.querySelector(CSS_GALLERY);
-
-	const G = document.querySelector(CSS_GALLERY);
-	const P = G.parentNode;
-	// hide and do work
-	P.removeChild(G);
-	const newImages = Array.from(pics.querySelectorAll('li'))
-		.map(e => e.parentNode.removeChild(e));
-	newImages.forEach(e => G.appendChild(e));
-	// show
-	P.appendChild(G);
-
-	mw.notify(`Loaded ${newImages.length} files`);
-
-	// chain next
-	register(doc.getElementById('mw-category-media'), isNext);
-}
-
-/**
  * Remember the root node so we
  * know where to put the buttons.
  */
@@ -95,9 +65,11 @@ export const register = async (ctr, isNext) => {
 
 	if (prev && showPrev) {
 		const btn = document.createElement('button');
-		btn.onclick = () => {
-			loadPage(prev, false);
+		btn.onclick = async () => {
+			loadPage(prev, CSS_GALLERY);
 			btn.disabled = true;
+			// chain next
+			register(doc.getElementById('mw-category-media'), false);
 		};
 		btn.textContent = 'Load PREVIOUS page';
 		rootCtr.prepend(btn);
@@ -105,9 +77,12 @@ export const register = async (ctr, isNext) => {
 
 	if (next && showNext) {
 		const btn = document.createElement('button');
-		btn.onclick = () => {
-			loadPage(next, true);
+		btn.onclick = async () => {
+			const doc = await loadDocument(next);
+			loadPage(next, CSS_GALLERY);
 			btn.disabled = true;
+			// chain next
+			register(doc.getElementById('mw-category-media'), true);
 		};
 		btn.textContent = 'Load NEXT page';
 		rootCtr.prepend(btn);

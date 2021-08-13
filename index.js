@@ -1,12 +1,12 @@
-import {register} from './info.js';
-import {register as registerCategory} from './category/index.js';
-import {register as registerContrib} from './contrib/index.js';
+import {register as registerA} from './views.js';
+import {register as registerB} from './category/index.js';
+import {register as registerC} from './contrib/index.js';
 
 export const app = () => {
 	[
-		register,
-		registerCategory,
-		registerContrib,
+		registerA,
+		registerB,
+		registerC,
 	].forEach(fn => {
 		try {
 			fn();
