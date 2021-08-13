@@ -47,7 +47,7 @@ export const register = ctr => {
 			return px_a < px_b;
 		});
 
-		const sorted = !beforeSort.some((a, i) => shadowGallery[i] !== a);
+		const sorted = beforeSort.every((a, i) => shadowGallery[i] === a);
 
 		if (sorted) {
 			mw.notify('Already sorted');
