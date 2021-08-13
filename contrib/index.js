@@ -1,4 +1,4 @@
-import {loadDocument, loadPage} from './util.js';
+import {loadDocument, loadPage} from './../util.js';
 
 const CSS_GALLERY = `.mw-contributions-list`;
 const CSS_NEXT = ".mw-nextlink";

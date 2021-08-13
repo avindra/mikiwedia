@@ -49,8 +49,25 @@ let rootCtr;
  * @param {Element} ctr 
  * @param {boolean} isNext
  */
-export const register = async (ctr, isNext) => {
-	if(!rootCtr) rootCtr = ctr;
+export const register = (ctr, isNext) => {
+	if(!rootCtr) {
+		rootCtr = ctr;
+		const loadAll = document.createElement('button');
+		loadAll.onclick = async () => {
+			loadAll.disabled = true;
+			let next, curNode = rootCtr;
+			do  {
+				const data = iterate(curNode);
+				[, next] = data;
+
+				const doc = await loadDocument(next);
+				curNode = doc.getElementById('mw-category-media');
+				loadPage(doc, CSS_GALLERY);
+			} while (next);
+		};
+		loadAll.textContent = 'Load ALL images';
+		rootCtr.prepend(loadAll);
+	}
 	const data = iterate(ctr);
 
 	const [prev, next] = data;
@@ -66,8 +83,9 @@ export const register = async (ctr, isNext) => {
 	if (prev && showPrev) {
 		const btn = document.createElement('button');
 		btn.onclick = async () => {
-			loadPage(prev, CSS_GALLERY);
 			btn.disabled = true;
+			const doc = await loadDocument(prev);
+			loadPage(doc, CSS_GALLERY);
 			// chain next
 			register(doc.getElementById('mw-category-media'), false);
 		};
@@ -78,9 +96,9 @@ export const register = async (ctr, isNext) => {
 	if (next && showNext) {
 		const btn = document.createElement('button');
 		btn.onclick = async () => {
-			const doc = await loadDocument(next);
-			loadPage(next, CSS_GALLERY);
 			btn.disabled = true;
+			const doc = await loadDocument(next);
+			loadPage(doc, CSS_GALLERY);
 			// chain next
 			register(doc.getElementById('mw-category-media'), true);
 		};

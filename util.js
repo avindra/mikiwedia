@@ -19,8 +19,9 @@ export async function loadDocument(url) {
  * @param {Document} doc
  * @param {string} CSS_GALLERY Selector for node of interest
  */
-async function loadPage(doc, CSS_GALLERY) {
+export function loadPage(doc, CSS_GALLERY) {
 	const pics = doc.querySelector(CSS_GALLERY);
+	if(!pics) return; // nothing to add (reached the end)
 
 	const G = document.querySelector(CSS_GALLERY);
 	const P = G.parentNode;
