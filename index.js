@@ -17,7 +17,7 @@ export const app = () => {
 }
 
 
-const sleep = (ms) => new Promise((resolve), setTimeout(resolve, ms));
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
  * padre forgive me
  * a goofy development mode hook
