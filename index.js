@@ -10,6 +10,27 @@ export const app = () => {
 	].forEach(fn => {
 		try {
 			fn();
+
+			const btn = document.createElement("button");
+			btn.onclick = () => {
+				/**
+				 * padre forgive me: dep on
+				 * personal localization
+				 */
+				const t = new Date().toLocaleTimeString();
+				const now = t.substring(0,t.lastIndexOf(':'));
+				const pad = now.padStart(5, '0');
+				location.pathname = `/wiki/Category:Time ${pad}`;
+			}
+			btn.textContent = "Check the time";
+
+			const tgtList = document.querySelector("nav#p-tb ul");
+
+			const ptr = document.createElement('li');
+			ptr.append(btn);
+
+			tgtList.append(ptr);
+
 		} catch(e) {
 			console.log("failed to register", fn, e);
 		}
