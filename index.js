@@ -104,7 +104,7 @@ export const app = () => {
 				return diff;
 			});
 
-			const indexResult = deltas.reduce((prevIndex, curr, i) => {
+			let indexResult = deltas.reduce((prevIndex, curr, i) => {
 				// excl. past events
 				if (allTimes[i] < now + TZ_OFFSET) {
 					return prevIndex;
@@ -118,18 +118,44 @@ export const app = () => {
 			}, -1);
 
 
+			/***
+			 * sometimes you need a +1 or -1 🤷🤷
+			 *
+			 * @param {boolean} Up or down
+			 */
+			function makeShifter(way) {
+				const f = document.createElement('button');
+				f.textContent = way ? `>` : '<';
+				f.onclick = () => {
+					way ? indexResult++ : indexResult--;
+					spectate();
+				};
+				return f;
+			}
+
+			const goBack = makeShifter();
+			const goNext = makeShifter(true);
+
+
 			console.log("🌌 ⌛", indexResult, baseline);
 			console.log("⌛ 🌌", projections, allTimes);
 
-			const iCandidate = indexResult - 1;
-			const txtNextEvent = baseline[iCandidate];
-			const msToNextEvent = deltas[iCandidate];
 
 			const spectato = document.createElement('a');
-			spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
-			spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
 
+			function spectate() {
+				const iCandidate = indexResult - 1;
+				const txtNextEvent = baseline[iCandidate];
+				const msToNextEvent = deltas[iCandidate];
+
+				spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
+				spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
+			}
+			spectate();
+
+			lst1.append(goBack)
 			lst1.append(spectato);
+			lst1.append(goNext)
 
 		} catch(e) {
 			console.log("failed to register", fn, e);
