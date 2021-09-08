@@ -95,7 +95,7 @@ export const app = () => {
 					new Date(
 						+projectedDate
 						+parseDaytime(baseline[i] + ap)
-						-TZ_OFFSET
+						+TZ_OFFSET
 					)
 				)).flat().sort((a,b)=>b-a);
 			
@@ -106,7 +106,7 @@ export const app = () => {
 
 			let indexResult = deltas.reduce((prevIndex, curr, i) => {
 				// excl. past events
-				if (allTimes[i] < now + TZ_OFFSET) {
+				if (allTimes[i] < now) {
 					return prevIndex;
 				}
 
@@ -116,6 +116,10 @@ export const app = () => {
 				} 
 				return prevIndex;
 			}, -1);
+
+			if (indexResult === -1) {
+				indexResult = 0;
+			}
 
 
 			/***
@@ -138,13 +142,13 @@ export const app = () => {
 
 
 			console.log("🌌 ⌛", indexResult, baseline);
-			console.log("⌛ 🌌", projections, allTimes);
+			console.log("⌛ 🌌", projections, allTimes, deltas);
 
 
 			const spectato = document.createElement('a');
 
 			function spectate() {
-				const iCandidate = indexResult - 1;
+				const iCandidate = indexResult;
 				const txtNextEvent = baseline[iCandidate];
 				const msToNextEvent = deltas[iCandidate];
 
