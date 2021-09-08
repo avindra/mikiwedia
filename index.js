@@ -3,14 +3,27 @@ import {register as registerB} from './category/index.js';
 import {register as registerC} from './contrib/index.js';
 
 /**
- * padre forgive me: dep on
- * personal localization
+ * Get time in xx:xx format as per Wikimedia categories
+ *
+ * @see https://commons.wikimedia.org/wiki/Category:Clocks_by_time
  */
 const getTime = () => {
-	const t = new Date().toLocaleTimeString();
-	const now = t.substring(0,t.lastIndexOf(':'));
-	const pad = now.padStart(5, '0');
+	const [t, /*am or pm*/] = new Date().toLocaleString('en-US', {
+		hour: 'numeric',
+		minute: 'numeric',
+		hour12: true
+	}).split(' ');
+	const pad = t.padStart(5, '0');
 	return pad;
+}
+
+/**
+ * @see https://stackoverflow.com/a/48581881/270302
+ */
+function parseDaytime(time) {
+	let [hours, minutes] = time.substr(0, time.length  -2).split(":").map(Number);
+	if (time.includes("pm") && hours !== 12) hours += 12;
+	return 1000/*ms*/ * 60/*s*/ * (hours * 60 + minutes);
 }
 
 const getLink = () => `/wiki/Category:Time ${getTime()}`;
@@ -25,16 +38,20 @@ export const app = () => {
 			fn();
 
 			const btn = document.createElement('a');
+			const setTime = () => {
+				btn.textContent = `Check time ${getTime()}`;
+			};
 			/**
 			 * @todo cmp and dsp clock drift (si existe)
-			 * @param {Event} e 
+			 * @param {Event} e
 			 */
 			btn.onclick = function(e) {
 				e.preventDefault();
+				setTime();
 				location.pathname = getLink();
 			}
 			btn.href = getLink();
-			btn.textContent = `Check time ${getTime()}`;
+			setTime();
 
 			const lst1 = document.querySelector("nav#p-tb ul");
 
@@ -65,15 +82,24 @@ export const app = () => {
 			];
 			const deltas = baseline.map(timeLabel => {
 				const now = new Date();
+				const TZ_OFFSET = now.getTimezoneOffset() * 60000;
 				const [date, /*time*/] = now.toISOString().split('T');
-				const proj =`${date}T${timeLabel}:00.000Z`;
-				const moment = new Date(proj);
+				const proj =`${date}T00:00`;
 
-				const diff = moment - now + now.getTimezoneOffset() * 60000;
-				return diff;
-			});
+				return ['am', 'pm'].map(ap => {
+					const moment = new Date(
+						+new Date(proj)
+						+parseDaytime(timeLabel + ap)
+					);
+
+					const diff = moment - now + TZ_OFFSET;
+					return diff;
+				});
+			}).flat();
 			const iCandidate = deltas.findIndex(delta => delta > 0);
 
+
+			console.log("🌌 ⌛", baseline, deltas);
 
 			const txtNextEvent = baseline[iCandidate];
 			const msToNextEvent = deltas[iCandidate];
