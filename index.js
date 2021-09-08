@@ -80,33 +80,54 @@ export const app = () => {
 				"00:00", "01:05","02:11", "03:16", "04:22","05:27",
 				"06:33", "07:38", "08:43","09:50", "10:55","12:00"
 			];
-			const deltas = baseline.map(timeLabel => {
-				const now = new Date();
-				const TZ_OFFSET = now.getTimezoneOffset() * 60000;
+
+			const now = new Date();
+			const TZ_OFFSET = now.getTimezoneOffset() * 60000;
+			const projections = baseline.map(() => {
 				const [date, /*time*/] = now.toISOString().split('T');
 				const proj =`${date}T00:00`;
 
-				return ['am', 'pm'].map(ap => {
-					const moment = new Date(
-						+new Date(proj)
-						+parseDaytime(timeLabel + ap)
-					);
+				return new Date(proj);
+			});
 
-					const diff = moment - now + TZ_OFFSET;
-					return diff;
-				});
-			}).flat();
-			const iCandidate = deltas.findIndex(delta => delta > 0);
+			const allTimes = projections.map((projectedDate, i) => 
+				['am', 'pm'].map(ap =>
+					new Date(
+						+projectedDate
+						+parseDaytime(baseline[i] + ap)
+						-TZ_OFFSET
+					)
+				)).flat().sort((a,b)=>b-a);
+			
+			const deltas = allTimes.map(moment => {
+				const diff = moment - now;
+				return diff;
+			});
+
+			const indexResult = deltas.reduce((prevIndex, curr, i) => {
+				// excl. past events
+				if (allTimes[i] < now + TZ_OFFSET) {
+					return prevIndex;
+				}
+
+				const prev = prevIndex === -1 ? Number.MAX_VALUE : deltas[prevIndex];
+				if (curr > 0 && curr < prev) {
+					return i;
+				} 
+				return prevIndex;
+			}, -1);
 
 
-			console.log("🌌 ⌛", baseline, deltas);
+			console.log("🌌 ⌛", indexResult, baseline);
+			console.log("⌛ 🌌", projections, allTimes);
 
+			const iCandidate = indexResult - 1;
 			const txtNextEvent = baseline[iCandidate];
 			const msToNextEvent = deltas[iCandidate];
 
 			const spectato = document.createElement('a');
 			spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
-			spectato.textContent = `Preview ${txtNextEvent} (in ${msToNextEvent}ms)`;
+			spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
 
 			lst1.append(spectato);
 
