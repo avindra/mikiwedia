@@ -2,6 +2,19 @@ import {register as registerA} from './views.js';
 import {register as registerB} from './category/index.js';
 import {register as registerC} from './contrib/index.js';
 
+/**
+ * padre forgive me: dep on
+ * personal localization
+ */
+const getTime = () => {
+	const t = new Date().toLocaleTimeString();
+	const now = t.substring(0,t.lastIndexOf(':'));
+	const pad = now.padStart(5, '0');
+	return pad;
+}
+
+const getLink = () => `/wiki/Category:Time ${getTime()}`;
+
 export const app = () => {
 	[
 		registerA,
@@ -11,18 +24,17 @@ export const app = () => {
 		try {
 			fn();
 
-			const btn = document.createElement("button");
-			btn.onclick = () => {
-				/**
-				 * padre forgive me: dep on
-				 * personal localization
-				 */
-				const t = new Date().toLocaleTimeString();
-				const now = t.substring(0,t.lastIndexOf(':'));
-				const pad = now.padStart(5, '0');
-				location.pathname = `/wiki/Category:Time ${pad}`;
+			const btn = document.createElement('a');
+			/**
+			 * @todo cmp and dsp clock drift (si existe)
+			 * @param {Event} e 
+			 */
+			btn.onclick = function(e) {
+				e.preventDefault();
+				location.pathname = getLink();
 			}
-			btn.textContent = "Check the time";
+			btn.href = getLink();
+			btn.textContent = `Check time ${getTime()}`;
 
 			const lst1 = document.querySelector("nav#p-tb ul");
 
@@ -43,6 +55,34 @@ export const app = () => {
 			ptr2.append(btn2);
 
 			lst2.append(ptr2);
+
+			/**
+			 * adjust as necessary
+			 */
+			const baseline = [
+				"00:00", "01:05","02:11", "03:16", "04:22","05:27",
+				"06:33", "07:38", "08:43","09:50", "10:55","12:00"
+			];
+			const deltas = baseline.map(timeLabel => {
+				const now = new Date();
+				const [date, /*time*/] = now.toISOString().split('T');
+				const proj =`${date}T${timeLabel}:00.000Z`;
+				const moment = new Date(proj);
+
+				const diff = moment - now + now.getTimezoneOffset() * 60000;
+				return diff;
+			});
+			const iCandidate = deltas.findIndex(delta => delta > 0);
+
+
+			const txtNextEvent = baseline[iCandidate];
+			const msToNextEvent = deltas[iCandidate];
+
+			const spectato = document.createElement('a');
+			spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
+			spectato.textContent = `Preview ${txtNextEvent} (in ${msToNextEvent}ms)`;
+
+			lst1.append(spectato);
 
 		} catch(e) {
 			console.log("failed to register", fn, e);
