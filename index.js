@@ -24,12 +24,25 @@ export const app = () => {
 			}
 			btn.textContent = "Check the time";
 
-			const tgtList = document.querySelector("nav#p-tb ul");
+			const lst1 = document.querySelector("nav#p-tb ul");
 
 			const ptr = document.createElement('li');
 			ptr.append(btn);
 
-			tgtList.append(ptr);
+			lst1.append(ptr);
+
+
+
+			const btn2 = document.createElement('a');
+			btn2.href = '/wiki/Special:Upload';
+			btn2.textContent = 'Limited upload';
+
+			const lst2 = document.querySelector("nav#p-participate ul");
+
+			const ptr2 = document.createElement('li');
+			ptr2.append(btn2);
+
+			lst2.append(ptr2);
 
 		} catch(e) {
 			console.log("failed to register", fn, e);
