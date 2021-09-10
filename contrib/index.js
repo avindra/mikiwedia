@@ -17,7 +17,22 @@ function createLimit() {
 	return l;
 }
 
+/**
+ * a) Paginate recent changes
+ * b) Special:Upload usability
+ *
+ */
 export const register = () => {
+	const pgName = mw.config.get('wgPageName');
+	// Special:Upload usability
+	if(pgName === 'Special:Upload') {
+		const txt = document.getElementById('uploadtext');
+		const P = txt.parentNode;
+		txt.remove();
+		P.appendChild(txt);
+	}
+
+	// recent changes pagination
 	const nav = document.querySelector(".mw-pager-navigation-bar");
 	if (!nav) return;
 
@@ -44,4 +59,5 @@ export const register = () => {
 			ctr.disabled = false;
 		}
 	}
+
 }
