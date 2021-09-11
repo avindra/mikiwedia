@@ -30,6 +30,19 @@ export const register = () => {
 		const P = txt.parentNode;
 		txt.remove();
 		P.appendChild(txt);
+
+
+		const summ = document.createElement('input');
+		summ.name = "wpSummary";
+		summ.id = "wpSummary";
+		summ.placeholder = "Look up past summary messages (alt+shift+b)";
+		summ.accessKey = "b";
+
+		// server doesnt do anything with it right now
+		document.querySelector('form#mw-upload-form').prepend(summ);
+	} else if (pgName === 'Special:UploadWizard') {
+		// link directly to old form
+		document.querySelector("#contentSub a:nth-of-type(3)").href = '/w/index.php?title=Special:Upload&uselang=experienced';
 	}
 
 	// recent changes pagination
