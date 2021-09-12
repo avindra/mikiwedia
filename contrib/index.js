@@ -1,4 +1,4 @@
-import {loadDocument, loadPage} from './../util.js';
+import {loadDocument, loadPage, bumpParam} from './../util.js';
 
 const CSS_GALLERY = `.mw-contributions-list`;
 const CSS_NEXT = ".mw-nextlink";
@@ -43,6 +43,10 @@ export const register = () => {
 	} else if (pgName === 'Special:UploadWizard') {
 		// link directly to old form
 		document.querySelector("#contentSub a:nth-of-type(3)").href = '/w/index.php?title=Special:Upload&uselang=experienced';
+	} else if(pgName === 'Special:Log') {
+		bumpParam('user');
+	} else {
+		console.log('📄 page', pgName);
 	}
 
 	// recent changes pagination

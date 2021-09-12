@@ -48,13 +48,10 @@ document.body.appendChild(l);
 
 ## Design
 
-Design principles for JavaScript-related code:
-
 * ES Modules
-* No third-party libraries
+* Don't add third-party libraries
+  * Limit use of jQuery and builtins
 * Lazy-load bigger modules with [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports)
-* Use basic `fetch` whenever possible
-* Limit use of jQuery and builtins
 
 ## Features
 
