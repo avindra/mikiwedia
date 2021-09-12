@@ -36,3 +36,24 @@ export function loadPage(doc, CSS_GALLERY) {
 	mw.notify(`Loaded ${newImages.length} items`);
 }
 
+
+/**
+ * Bump parameter with given name to the end of the URL.
+ *
+ * @param {string} name parameter name
+ */
+export const bumpParam = (name) => {
+	const params = new URLSearchParams(location.search.substring(1));
+	let lastKey;
+	for (const [key] of params.entries()) {
+		lastKey = key;
+	}
+
+	const Q = params.get(name);
+	if (Q && lastKey !==name) { // place query at the end (ezier editing)
+		params.delete(name);
+		params.set(name, Q);
+		const nextHref = location.pathname + '?'+ params.toString();
+		location.href = nextHref;
+	}
+};
