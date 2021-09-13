@@ -130,6 +130,6 @@ export const register = () => {
 
 	const slowLookup = debounce(onLookup, 750);
 
-	$(".mw-contributions-title").mouseover(slowLookup);
+	$(".mw-body").on("mouseover", ".mw-contributions-title", slowLookup);
 	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", slowLookup);
 }
