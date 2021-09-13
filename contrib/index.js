@@ -58,23 +58,35 @@ export const register = () => {
 	let nextPage = nextDocument.querySelector(CSS_NEXT);
 
 	if (nextPage) {
-		const ctr = document.createElement('button');
-		ctr.textContent = 'Older';
+		const btn = document.createElement('button');
+		btn.textContent = 'Older';
 		const P = nav.parentNode;
-		const L = createLimit();
-		L.onchange = (event) => {
+		const limiter = createLimit();
+		const onChange = (event) => {
 			limit = Number(event.target.value);
-		}
-		P.prepend(L);
-		P.prepend(ctr);
+		};
+		limiter.onchange = onChange;
+		const ctr = document.createElement('span');
+		ctr.append(btn, limiter);
 
-		ctr.onclick = async () => {
-			ctr.disabled = true;
+		const onClick = async function () {
+			this.disabled = true;
 			nextDocument = await loadDocument(nextPage.href + `&limit=${limit}`);
 			nextPage = nextDocument.querySelector(CSS_NEXT);
 			loadPage(nextDocument, CSS_GALLERY);
-			ctr.disabled = false;
-		}
+			this.disabled = false;
+		};
+		btn.onclick = onClick;
+		P.prepend(ctr);
+
+		/** make copy for bottom, with events wired   */
+		const ctr2 = ctr.cloneNode(true);
+		ctr2.querySelector('button').onclick = onClick;
+		const sl = ctr2.querySelector('select');
+		sl.value = DEFAULT_LIMIT;
+		sl.onchange = onChange;
+
+		P.append(ctr2);
 	}
 
 }

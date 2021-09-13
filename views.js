@@ -69,6 +69,7 @@ function debounce(func, wait) {
  */
 export const register = () => {
 	const thisPage = mw.config.get('wgPageName');
+
 	/**
 	 * 
 	 * @param {Event} event 
@@ -130,6 +131,9 @@ export const register = () => {
 
 	const slowLookup = debounce(onLookup, 750);
 
-	$(".mw-body").on("mouseover", ".mw-contributions-title", slowLookup);
-	$(".mw-category-generated").on("mouseover", ".gallerybox .gallerytext a", slowLookup);
+	$('.mw-body')
+		.on('mouseover', '.mw-contributions-title', slowLookup);
+
+	$('.mw-category-generated')
+		.on('mouseover', '.gallerybox .gallerytext a', slowLookup);
 }

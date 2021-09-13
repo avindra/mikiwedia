@@ -26,12 +26,13 @@ export function loadPage(doc, CSS_GALLERY) {
 	const G = document.querySelector(CSS_GALLERY);
 	const P = G.parentNode;
 	// hide and do work
+	const sib = G.previousSibling;
 	P.removeChild(G);
 	const newImages = Array.from(pics.querySelectorAll('li'))
 		.map(e => e.parentNode.removeChild(e));
 	newImages.forEach(e => G.appendChild(e));
 	// show
-	P.appendChild(G);
+	P.insertBefore(G, sib);
 
 	mw.notify(`Loaded ${newImages.length} items`);
 }
