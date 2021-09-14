@@ -36,137 +36,136 @@ export const app = () => {
 	].forEach(fn => {
 		try {
 			fn();
-
-			const MENU_MOBILE = document.getElementsByTagName('nav')[1];
-
-			const btn = document.createElement('a');
-			const setTime = () => {
-				btn.textContent = `🕑 ${getTime()}`;
-			};
-			/**
-			 * @todo cmp and dsp clock drift (si existe)
-			 * @param {Event} e
-			 */
-			btn.onclick = function(e) {
-				e.preventDefault();
-				setTime();
-				location.pathname = getLink();
-			}
-			btn.href = getLink();
-			setTime();
-
-			const lst1 = MENU_MOBILE || document.querySelector("nav#p-tb ul");
-
-			const ptr = document.createElement('li');
-			ptr.append(btn);
-
-			lst1.append(ptr);
-
-
-
-			const btn2 = document.createElement('a');
-			btn2.href = '/wiki/Special:Upload';
-			btn2.textContent = '⬆ 🆙️';
-
-			const lst2 = MENU_MOBILE || document.querySelector("nav#p-participate ul");
-
-			const ptr2 = document.createElement('li');
-			ptr2.append(btn2);
-
-			lst2.append(ptr2);
-
-			/**
-			 * adjust as necessary
-			 */
-			const baseline = [
-				"00:00", "01:05","02:11", "03:16", "04:22","05:27",
-				"06:33", "07:38", "08:43","09:50", "10:55","12:00"
-			];
-
-			const now = new Date();
-			const TZ_OFFSET = now.getTimezoneOffset() * 60000;
-			const projections = baseline.map(() => {
-				const [date, /*time*/] = now.toISOString().split('T');
-				const proj =`${date}T00:00`;
-
-				return new Date(proj);
-			});
-
-			const allTimes = projections.map((projectedDate, i) => 
-				['am', 'pm'].map(ap =>
-					new Date(
-						+projectedDate
-						+parseDaytime(baseline[i] + ap)
-						+TZ_OFFSET
-					)
-				)).flat().sort((a,b)=>b-a);
-			
-			const deltas = allTimes.map(moment => {
-				const diff = moment - now;
-				return diff;
-			});
-
-			let indexResult = deltas.reduce((prevIndex, curr, i) => {
-				// excl. past events
-				if (allTimes[i] < now) {
-					return prevIndex;
-				}
-
-				const prev = prevIndex === -1 ? Number.MAX_VALUE : deltas[prevIndex];
-				if (curr > 0 && curr < prev) {
-					return i;
-				} 
-				return prevIndex;
-			}, -1);
-
-			if (indexResult === -1) {
-				indexResult = 0;
-			}
-
-
-			/***
-			 * sometimes you need a +1 or -1 🤷🤷
-			 *
-			 * @param {boolean} Up or down
-			 */
-			function makeShifter(way) {
-				const f = document.createElement('button');
-				f.textContent = way ? `>` : '<';
-				f.onclick = () => {
-					way ? indexResult++ : indexResult--;
-					spectate();
-				};
-				return f;
-			}
-
-			const goBack = makeShifter();
-			const goNext = makeShifter(true);
-
-
-			console.log("🌌 ⌛", indexResult, baseline);
-			console.log("⌛ 🌌", projections, allTimes, deltas);
-
-
-			const spectato = document.createElement('a');
-
-			function spectate() {
-				const iCandidate = indexResult;
-				const txtNextEvent = baseline[iCandidate];
-				const msToNextEvent = deltas[iCandidate];
-
-				spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
-				spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
-			}
-			spectate();
-
-			lst1.append(goBack)
-			lst1.append(spectato);
-			lst1.append(goNext)
-
 		} catch(e) {
 			console.log("failed to register", fn, e);
 		}
 	});
+
+	const MENU_MOBILE = document.getElementsByTagName('nav')[1];
+
+	const btn = document.createElement('a');
+	const setTime = () => {
+		btn.textContent = `🕑 ${getTime()}`;
+	};
+	/**
+	 * @todo cmp and dsp clock drift (si existe)
+	 * @param {Event} e
+	 */
+	btn.onclick = function(e) {
+		e.preventDefault();
+		setTime();
+		location.pathname = getLink();
+	}
+	btn.href = getLink();
+	setTime();
+
+	const lst1 = MENU_MOBILE || document.querySelector("nav#p-tb ul");
+
+	const ptr = document.createElement('li');
+	ptr.append(btn);
+
+	lst1.append(ptr);
+
+
+
+	const btn2 = document.createElement('a');
+	btn2.href = '/wiki/Special:Upload';
+	btn2.textContent = '⬆ 🆙️';
+
+	const lst2 = MENU_MOBILE || document.querySelector("nav#p-participate ul");
+
+	const ptr2 = document.createElement('li');
+	ptr2.append(btn2);
+
+	lst2.append(ptr2);
+
+	/**
+	 * adjust as necessary
+	 */
+	const baseline = [
+		"00:00", "01:05","02:11", "03:16", "04:22","05:27",
+		"06:33", "07:38", "08:43","09:50", "10:55","12:00"
+	];
+
+	const now = new Date();
+	const TZ_OFFSET = now.getTimezoneOffset() * 60000;
+	const projections = baseline.map(() => {
+		const [date, /*time*/] = now.toISOString().split('T');
+		const proj =`${date}T00:00`;
+
+		return new Date(proj);
+	});
+
+	const allTimes = projections.map((projectedDate, i) => 
+		['am', 'pm'].map(ap =>
+			new Date(
+				+projectedDate
+				+parseDaytime(baseline[i] + ap)
+				+TZ_OFFSET
+			)
+		)).flat().sort((a,b)=>b-a);
+	
+	const deltas = allTimes.map(moment => {
+		const diff = moment - now;
+		return diff;
+	});
+
+	let indexResult = deltas.reduce((prevIndex, curr, i) => {
+		// excl. past events
+		if (allTimes[i] < now) {
+			return prevIndex;
+		}
+
+		const prev = prevIndex === -1 ? Number.MAX_VALUE : deltas[prevIndex];
+		if (curr > 0 && curr < prev) {
+			return i;
+		} 
+		return prevIndex;
+	}, -1);
+
+	if (indexResult === -1) {
+		indexResult = 0;
+	}
+
+
+	/***
+	 * sometimes you need a +1 or -1 🤷🤷
+	 *
+	 * @param {boolean} Up or down
+	 */
+	function makeShifter(way) {
+		const f = document.createElement('button');
+		f.textContent = way ? `>` : '<';
+		f.onclick = () => {
+			way ? indexResult++ : indexResult--;
+			spectate();
+		};
+		return f;
+	}
+
+	const goBack = makeShifter();
+	const goNext = makeShifter(true);
+
+
+	console.log("🌌 ⌛", indexResult, baseline);
+	console.log("⌛ 🌌", projections, allTimes, deltas);
+
+
+	const spectato = document.createElement('a');
+
+	function spectate() {
+		const iCandidate = indexResult;
+		const txtNextEvent = baseline[iCandidate];
+		const msToNextEvent = deltas[iCandidate];
+
+		spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
+		spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
+	}
+	spectate();
+
+	lst1.append(goBack)
+	lst1.append(spectato);
+	lst1.append(goNext)
 }
 
 
