@@ -20,11 +20,11 @@ function createLimit() {
 /**
  * @see https://www.mediawiki.org/w/index.php?title=Topic:Uf4krdlgla2ofhg8&topic_showPostId=ufaoyapift6qlhrg#flow-post-ufaoyapift6qlhrg
  */
-async function getHTML() {
+async function getHTML(wikitext) {
 	await mw.loader.using( 'mediawiki.api' );
 	const api = new mw.Api();
 
-	const html = await api.parse( "'''Hello world'''" );
+	const html = await api.parse( wikitext);
 	return html;
 }
 
@@ -71,7 +71,7 @@ export const register = () => {
 
 	if (nextPage) {
 		const btn = document.createElement('button');
-		btn.textContent = 'Oldrrrr';
+		btn.textContent = 'Older';
 		const P = nav.parentNode;
 		const limiter = createLimit();
 		const onChange = (event) => {
@@ -94,6 +94,7 @@ export const register = () => {
 
 		const viewFiles = document.createElement('button');
 		viewFiles.onclick = async function () {
+			this.disabled = true;
 			const files = Array.from(document.querySelectorAll(".mw-contributions-title")).map(a => a.textContent);
 			const f = files.sort().map(f => {
 				if (f.startsWith("File:")) {
@@ -107,6 +108,7 @@ export const register = () => {
 			const sp = document.createElement('span');
 			sp.innerHTML = html;
 			document.body.appendChild(sp);
+			this.disabled = false;
 		};
 		viewFiles.textContent = "🔍";
 		P.prepend(viewFiles);
