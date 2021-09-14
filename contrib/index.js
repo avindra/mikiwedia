@@ -18,6 +18,18 @@ function createLimit() {
 }
 
 /**
+ * @see https://www.mediawiki.org/w/index.php?title=Topic:Uf4krdlgla2ofhg8&topic_showPostId=ufaoyapift6qlhrg#flow-post-ufaoyapift6qlhrg
+ */
+async function getHTML() {
+	await mw.loader.using( 'mediawiki.api' );
+	const api = new mw.Api();
+
+	const html = await api.parse( "'''Hello world'''" );
+	return html;
+}
+
+
+/**
  * a) Paginate recent changes
  * b) Special:Upload usability
  *
@@ -78,6 +90,26 @@ export const register = () => {
 		};
 		btn.onclick = onClick;
 		P.prepend(ctr);
+
+
+		const btn = document.createElement('button');
+		btn.onclick = async function () {
+			const files = Array.from(document.querySelectorAll(".mw-contributions-title")).map(a => a.textContent);
+			const f = files.sort().map(f => {
+				if (f.startsWith("File:")) {
+					return `[[${f}|200px]]`;
+				}
+
+				return `[[:${f}]]`;
+			});
+			const list = f.join('\n');
+			const html = await getHTML(list);
+			const sp = document.createElement('span');
+			sp.innerHTML = html;
+			document.body.appendChild(sp);
+		};
+		btn.textContent = "🔍";
+		P.prepend(btn);
 
 		/** make copy for bottom, with events wired   */
 		const ctr2 = ctr.cloneNode(true);
