@@ -71,7 +71,7 @@ export const register = () => {
 
 	if (nextPage) {
 		const btn = document.createElement('button');
-		btn.textContent = 'Older';
+		btn.textContent = 'Oldrrrr';
 		const P = nav.parentNode;
 		const limiter = createLimit();
 		const onChange = (event) => {
@@ -92,8 +92,8 @@ export const register = () => {
 		P.prepend(ctr);
 
 
-		const btn = document.createElement('button');
-		btn.onclick = async function () {
+		const viewFiles = document.createElement('button');
+		viewFiles.onclick = async function () {
 			const files = Array.from(document.querySelectorAll(".mw-contributions-title")).map(a => a.textContent);
 			const f = files.sort().map(f => {
 				if (f.startsWith("File:")) {
@@ -108,8 +108,8 @@ export const register = () => {
 			sp.innerHTML = html;
 			document.body.appendChild(sp);
 		};
-		btn.textContent = "🔍";
-		P.prepend(btn);
+		viewFiles.textContent = "🔍";
+		P.prepend(viewFiles);
 
 		/** make copy for bottom, with events wired   */
 		const ctr2 = ctr.cloneNode(true);
