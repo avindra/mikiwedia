@@ -15,23 +15,18 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 	clearTimeout(id);
 	if (r.ok) {
 		APP_URL = LOCAL_URL;
-		// make sure to load dev env only once
-		if(!window.devel) {
-			window.devel = true;
-
-			/**
-			 * Prevent a race... we need to ensure
-			 * deps are fully loaded
-			 */
-			while (!('$' in window) && !('mw' in window)) {
-				console.warn("Race detected... deferring init until after jQuery is loaded");
-				await sleep(500);
-			}
-
-			mw.notify("🚀 loaded local build: " + new Date());
-
-			const {app} = await import(`${APP_URL}`);
-			app();
+		/**
+		 * Prevent a race... we need to ensure
+		 * deps are fully loaded
+		 */
+		while (!('$' in window) && !('mw' in window)) {
+			console.warn("Race detected... deferring init until after jQuery is loaded");
+			await sleep(500);
 		}
+
+		mw.notify("🚀 loaded local build: " + new Date());
 	}
+
+	const {app} = await import(`${APP_URL}`);
+	app();
 })();
