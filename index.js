@@ -26,6 +26,32 @@ function parseDaytime(time) {
 	return 1000/*ms*/ * 60/*s*/ * (hours * 60 + minutes);
 }
 
+
+/**
+ * 
+ * @param {number} num 
+ */
+function formatMS(num) {
+	const MINUTE = 1200000;
+	if (num > MINUTE) {
+		return Math.round(num / MINUTE) + ' mins';
+	}
+
+	return num + 'ms';
+}
+
+/**
+ * 
+ * @param {number} i24 
+ */
+function i12(i24) {
+	let t = i24;
+	if (t > 12) {
+		t -= 12;
+	}
+	return t;
+}
+
 const getLink = () => `/wiki/Category:Time ${getTime()}`;
 
 export const app = () => {
@@ -110,7 +136,7 @@ export const app = () => {
 		return diff;
 	});
 
-	let indexResult = deltas.reduce((prevIndex, curr, i) => {
+	let i24 = deltas.reduce((prevIndex, curr, i) => {
 		// excl. past events
 		if (allTimes[i] < now) {
 			return prevIndex;
@@ -123,10 +149,12 @@ export const app = () => {
 		return prevIndex;
 	}, -1);
 
-	if (indexResult === -1) {
-		indexResult = 0;
+
+	if (i24 === -1) {
+		i24 = 0;
 	}
 
+	i24 -= 1;
 
 	/***
 	 * sometimes you need a +1 or -1 🤷🤷
@@ -137,7 +165,7 @@ export const app = () => {
 		const f = document.createElement('button');
 		f.textContent = way ? `>` : '<';
 		f.onclick = () => {
-			way ? indexResult++ : indexResult--;
+			way ? i24++ : i24--;
 			spectate();
 		};
 		return f;
@@ -147,19 +175,18 @@ export const app = () => {
 	const goNext = makeShifter(true);
 
 
-	console.log("🌌 ⌛", indexResult, baseline);
+	console.log("🌌 ⌛", i24, baseline);
 	console.log("⌛ 🌌", projections, allTimes, deltas);
 
 
 	const spectato = document.createElement('a');
 
 	function spectate() {
-		const iCandidate = indexResult;
-		const txtNextEvent = baseline[iCandidate];
-		const msToNextEvent = deltas[iCandidate];
+		const txtNextEvent = baseline[i12(i24)];
+		const msToNextEvent = deltas[i24];
 
 		spectato.href = `/wiki/Category:Time ${txtNextEvent}`;
-		spectato.textContent = `⌚ ${txtNextEvent} (in ${msToNextEvent}ms)`;
+		spectato.textContent = `⌚ ${txtNextEvent} (in ${formatMS(msToNextEvent)})`;
 	}
 	spectate();
 
