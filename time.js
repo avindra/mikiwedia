@@ -166,7 +166,11 @@ export const register = () => {
 		const f = document.createElement('button');
 		f.textContent = way ? `>` : '<';
 		f.onclick = () => {
-			way ? i24++ : i24--;
+			if (way) {
+				i24 = ++i24 >= 24 ? 0 : i24;
+			} else {
+				i24 = --i24 < 0 ? 12 : i24;
+			}
 			spectate();
 		};
 		return f;
