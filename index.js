@@ -37,9 +37,11 @@ export const app = () => {
 		try {
 			fn();
 
+			const MENU_MOBILE = document.getElementsByTagName('nav')[1];
+
 			const btn = document.createElement('a');
 			const setTime = () => {
-				btn.textContent = `Check time ${getTime()}`;
+				btn.textContent = `🕑 ${getTime()}`;
 			};
 			/**
 			 * @todo cmp and dsp clock drift (si existe)
@@ -53,7 +55,7 @@ export const app = () => {
 			btn.href = getLink();
 			setTime();
 
-			const lst1 = document.querySelector("nav#p-tb ul");
+			const lst1 = MENU_MOBILE || document.querySelector("nav#p-tb ul");
 
 			const ptr = document.createElement('li');
 			ptr.append(btn);
@@ -64,9 +66,9 @@ export const app = () => {
 
 			const btn2 = document.createElement('a');
 			btn2.href = '/wiki/Special:Upload';
-			btn2.textContent = 'Limited upload';
+			btn2.textContent = '⬆ 🆙️';
 
-			const lst2 = document.querySelector("nav#p-participate ul");
+			const lst2 = MENU_MOBILE || document.querySelector("nav#p-participate ul");
 
 			const ptr2 = document.createElement('li');
 			ptr2.append(btn2);

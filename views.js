@@ -119,6 +119,9 @@ export const register = () => {
 		A.addEventListener('click', onLookup, false);
 
 		let parent = document.querySelector("#p-views ul");
+		if (!parent) { // might be on mobile
+			parent = document.getElementsByTagName('nav')[1];
+		}
 		if (parent) {
 			const L = document.createElement('li');
 			L.appendChild(A);
