@@ -107,10 +107,23 @@ export const app = () => {
 
 	/**
 	 * adjust as necessary
+	 *
+	 * The _apparent_ baseline, based on the
+	 * state of examples in Commons as per
+	 * Sept 2021
 	 */
 	const baseline = [
 		"00:00", "01:05","02:11", "03:16", "04:22","05:27",
 		"06:33", "07:38", "08:43","09:50", "10:55","12:00"
+	];
+
+	/** 
+	 * baseline of:
+	 * Category:White_clock_with_yellow_numbers_(5_min_interval_set)
+	 */
+	const baseline0 = [
+		"00:00", "01:05", "02:10", "03:15", "04:20", "05:25",
+		"06:30", "07:35", "08:40", "09:45", "10:50", "11:55"
 	];
 
 	const now = new Date();
