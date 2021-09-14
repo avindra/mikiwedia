@@ -1,3 +1,4 @@
+import {app} from './app.js';
 /**
  * padre forgive me
  * a goofy development mode hook
@@ -17,6 +18,11 @@
 		mw.notify("🚀 loading local build @" + new Date());
 	}
 
-	const {app} = await import(`${APP_URL}`);
-	app();
+	try {
+		const {app:localApp} = await import(`${APP_URL}`);
+		localApp();
+	} catch(e) {
+		// in case no dynamic import
+		app();
+	}
 })();
