@@ -6,21 +6,21 @@ import {register as registerD} from './time.js';
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const app = () => {
+	/**
+	 * Prevent a race... we need to ensure
+	 * deps are fully loaded
+	 */
+	while (!('$' in window) && !('mw' in window)) {
+		console.warn("Race detected... deferring until deps loaded");
+		await sleep(500);
+	}
+
 	[
 		registerA,
 		registerB,
 		registerC,
 		registerD,
 	].forEach(async fn => {
-		/**
-		 * Prevent a race... we need to ensure
-		 * deps are fully loaded
-		 */
-		while (!('$' in window) && !('mw' in window)) {
-			console.warn("Race detected... deferring until deps loaded");
-			await sleep(500);
-		}
-
 		try {
 			fn();
 		} catch(e) {
