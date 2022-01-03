@@ -96,7 +96,7 @@ export const register = () => {
 		viewFiles.onclick = async function () {
 			this.disabled = true;
 			const files = Array.from(document.querySelectorAll(".mw-contributions-title")).map(a => a.textContent);
-			const f = files.sort().map(f => {
+			const f = [...new Set(files)].sort().map(f => {
 				if (f.startsWith("File:")) {
 					return `[[${f}|200px]]`;
 				}
