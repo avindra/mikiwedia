@@ -5,7 +5,7 @@ import {register as registerD} from './time.js';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const app = async() => {
+export const app = () => {
 	[
 		registerA,
 		registerB,
