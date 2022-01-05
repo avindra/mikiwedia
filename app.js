@@ -3,8 +3,6 @@ import {register as registerB} from './category/index.js';
 import {register as registerC} from './contrib/index.js';
 import {register as registerD} from './time.js';
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export const app = () => {
 	[
 		registerA,
