@@ -5,7 +5,7 @@ import {register as registerD} from './time.js';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const app = () => {
+export const app = async() => {
 	/**
 	 * Prevent a race... we need to ensure
 	 * deps are fully loaded
@@ -20,7 +20,7 @@ export const app = () => {
 		registerB,
 		registerC,
 		registerD,
-	].forEach(async fn => {
+	].forEach(fn => {
 		try {
 			fn();
 		} catch(e) {
