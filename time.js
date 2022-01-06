@@ -195,7 +195,9 @@ export const register = () => {
 	}
 	spectate();
 
-	lst1.append(goBack)
-	lst1.append(spectato);
-	lst1.append(goNext)
+
+	const ptr3 = document.createElement('li');
+	goBack.style.float = 'left';
+	ptr3.append(goBack, spectato, goNext);
+	lst1.append(ptr3);
 }
