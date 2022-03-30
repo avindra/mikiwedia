@@ -25,6 +25,7 @@ async function getHTML(wikitext) {
 	const api = new mw.Api();
 
 	const html = await api.parse( wikitext);
+
 	return html;
 }
 
@@ -107,7 +108,7 @@ export const register = () => {
 			const html = await getHTML(list);
 			const sp = document.createElement('span');
 			sp.innerHTML = html;
-			document.body.appendChild(sp);
+			document.body.appendChild(sp.firstChild.firstChild);
 			this.disabled = false;
 		};
 		viewFiles.textContent = "🔍";
