@@ -6,40 +6,45 @@
  */
 const plotGraph = (file, info) => {
 	let dialog, windowManager;
-	function MyProcessDialog( config ) {
-		MyProcessDialog.parent.call( this, config );
+	function MyProcessDialog(config) {
+		MyProcessDialog.parent.call(this, config);
 	}
-	OO.inheritClass( MyProcessDialog, OO.ui.ProcessDialog );
+	OO.inheritClass(MyProcessDialog, OO.ui.ProcessDialog);
 
-	MyProcessDialog.static.title = file + ' || ' + mw.msg( 'pvi-range', info.start, info.end );
-	MyProcessDialog.static.name = 'PageViewInfo';
-	MyProcessDialog.static.actions = [
-		{ label: mw.msg( 'pvi-close' ), flags: 'safe' }
-	];
+	MyProcessDialog.static.title =
+		file + " || " + mw.msg("pvi-range", info.start, info.end);
+	MyProcessDialog.static.name = "PageViewInfo";
+	MyProcessDialog.static.actions =
+		[{ label: mw.msg("pvi-close"), flags: "safe" }];
 
-	MyProcessDialog.prototype.initialize = function () {
-		MyProcessDialog.parent.prototype.initialize.apply( this, arguments );
-		this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-		this.$body.append( this.content.$element );
-		mw.drawVegaGraph( this.content.$element[ 0 ], info.graph );
-	};
-	MyProcessDialog.prototype.getActionProcess = function ( action ) {
-		const diag = this;
-		if ( action ) {
-			return new OO.ui.Process(function() {
-				diag.close({ action: action });
-			});
-		}
-		return MyProcessDialog.parent.prototype.getActionProcess.call( this, action );
-	};
+	MyProcessDialog.prototype.initialize =
+		function () {
+			MyProcessDialog.parent.prototype.initialize.apply(this, arguments);
+			this.content = new OO.ui.PanelLayout({ padded: true, expanded: false });
+			this.$body.append(this.content.$element);
+			mw.drawVegaGraph(this.content.$element[0], info.graph);
+		};
+	MyProcessDialog.prototype.getActionProcess =
+		function (action) {
+			const diag = this;
+			if (action) {
+				return new OO.ui.Process(function () {
+					diag.close({ action: action });
+				});
+			}
+			return MyProcessDialog.parent.prototype.getActionProcess.call(
+				this,
+				action,
+			);
+		};
 
 	windowManager = new OO.ui.WindowManager();
-	$('body').append( windowManager.$element );
+	$("body").append(windowManager.$element);
 
-	dialog = new MyProcessDialog( { size: 'large' } );
-	windowManager.addWindows( [ dialog ] );
-	windowManager.openWindow( dialog );
-}
+	dialog = new MyProcessDialog({ size: "large" });
+	windowManager.addWindows([dialog]);
+	windowManager.openWindow(dialog);
+};
 
 /**
  * @see https://davidwalsh.name/javascript-debounce-function
@@ -50,9 +55,9 @@ const plotGraph = (file, info) => {
  */
 function debounce(func, wait) {
 	let timeout;
-	return function() {
+	return function () {
 		const context = this, args = arguments;
-		const later = function() {
+		const later = function () {
 			timeout = null;
 			func.apply(context, args);
 		};
@@ -61,14 +66,14 @@ function debounce(func, wait) {
 			timeout = setTimeout(later, wait);
 		}
 	};
-};
+}
 
 /**
  * Quickly check file view analytics by mousing
  * over titles
  */
 export const register = () => {
-	const thisPage = mw.config.get('wgPageName');
+	const thisPage = mw.config.get("wgPageName");
 
 	/**
 	 * 
@@ -81,16 +86,16 @@ export const register = () => {
 		 * href example: https://example.com/wiki/Q1337
 		 * title example (well-formed): File:Some File.jpg
 		 */
-		const mwFile = ((/^(?:.+:.+|Q\d+)$/.test(node.title) || node.title === thisPage)  && node.title) ||
-			(/\/wiki\/(.+)/.test(node.href) && RegExp.$1);
+		const mwFile = (
+			(/^(?:.+:.+|Q\d+)$/.test(node.title) || node.title === thisPage) && node.title
+		) || (/\/wiki\/(.+)/.test(node.href) && RegExp.$1);
 		const response = await fetch(`/w/index.php?title=${mwFile}&action=info`);
 		const txt = await response.text();
-
 
 		/**
 		 * Load graphics modules
 		 */
-		if (!('drawVegaGraph' in mw)) {
+		if (!("drawVegaGraph" in mw)) {
 			await mw.loader.using("ext.pageviewinfo");
 		}
 
@@ -99,10 +104,14 @@ export const register = () => {
 		 */
 		const RLCONF = txt.match(/RLCONF=([\s\S]+);RLSTATE=/);
 		if (RLCONF) {
-			const conf = JSON.parse(RLCONF[1].replace(/\!0/g,'true').replace(/\!1/g,'false'));
+			const conf = JSON.parse(
+				RLCONF[1].replace(/\!0/g, "true").replace(/\!1/g, "false"),
+			);
 			const data = conf.wgPageViewInfo;
-			console.log('d', data);
-			const hasNoData = data.graph.data[0].values.every(sample => !sample.views);
+			console.log("d", data);
+			const hasNoData = data.graph.data[0].values.every(
+				(sample) => !sample.views,
+			);
 			if (hasNoData) {
 				mw.notify(`No data for ${mwFile}`);
 			} else {
@@ -111,32 +120,34 @@ export const register = () => {
 		}
 	};
 
-	const pageInfo = document.getElementById('t-info');
+	const pageInfo = document.getElementById("t-info");
 	if (pageInfo) {
-		const A = document.createElement('a');
-		A.textContent = 'Page views';
+		const A = document.createElement("a");
+		A.textContent = "Page views";
 		A.title = thisPage;
-		A.addEventListener('click', onLookup, false);
+		A.addEventListener("click", onLookup, false);
 
 		let parent = document.querySelector("#p-views ul");
-		if (!parent) { // might be on mobile
-			parent = document.getElementsByTagName('nav')[1];
+		if (!parent) {
+			// might be on mobile
+			parent = document.getElementsByTagName("nav")[1];
 		}
 		if (parent) {
-			const L = document.createElement('li');
+			const L = document.createElement("li");
 			L.appendChild(A);
 			parent.prepend(L);
 		} else {
 			pageInfo.parentNode.appendChild(A);
 		}
-
 	}
 
 	const slowLookup = debounce(onLookup, 750);
 
-	$('.mw-body')
-		.on('mouseover', '.mw-contributions-title', slowLookup);
+	$(".mw-body").on("mouseover", ".mw-contributions-title", slowLookup);
 
-	$('.mw-category-generated')
-		.on('mouseover', '.gallerybox .gallerytext a', slowLookup);
-}
+	$(".mw-category-generated").on(
+		"mouseover",
+		".gallerybox .gallerytext a",
+		slowLookup,
+	);
+};
