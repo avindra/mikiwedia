@@ -42,7 +42,7 @@ Local testing looks more like:
 ```js
 var l = document.createElement("script");
 l.type = "module";
-l.src = 'http://localhost:8000/index.js';
+l.src = 'https://localhost:8000/index.js';
 document.body.appendChild(l);
 ```
 
