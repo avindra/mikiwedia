@@ -5,7 +5,7 @@ import {app} from './app.js';
  */
 (async() => {
 	let APP_URL = `./app.js`;
-	const LOCAL_URL = `http://localhost:8000/app.js`;
+	const LOCAL_URL = `https://localhost:8000/app.js`;
 	const controller = new AbortController();
 	const id = setTimeout(() => controller.abort(), 750);
 	const r = await fetch(LOCAL_URL, {
