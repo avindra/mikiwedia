@@ -51,7 +51,7 @@ document.body.appendChild(l);
 * ES Modules
 * Don't add third-party libraries
   * Limit use of jQuery and builtins
-* Lazy-load bigger modules with [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#dynamic_imports)
+* Lazy-load bigger modules with [dynamic imports](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)
 
 ## Features
 
